@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cool Ping Pong Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .game-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            border: 2px solid #333;
+        }
+
+        .game-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            border: 2px solid #333;
+            background: url('picture.jpg'); /* Replace 'your-background-image.jpg' with the actual path to your image */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff6347;
+            border-radius: 50%;
+            display: none; /* Initially hide the ball */
+            box-shadow: 0 0 10px 5px #c5280c; /* Glow effect */
+        }
+
+        .paddle {
+            position: absolute;
+            width: 10px;
+            height: 80px;
+            background-color: #3498db;
+        }
+
+        #leftPaddle {
+            left: 0;
+        }
+
+        #rightPaddle {
+            right: 0;
+        }
+
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #27ae60;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #da4535;
+            display: none; /* Initially hide the game over message */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <button id="startButton" onclick="startGame()">Start Game</button>
+        <div class="ball" id="ball"></div>
+        <div class="paddle" id="leftPaddle"></div>
+        <div class="paddle" id="rightPaddle"></div>
+        <div class="game-over" id="gameOver">Game Over!</div>
+    </div>
+    <script>
+            document.addEventListener('DOMContentLoaded', function () {
+            const ball = document.getElementById('ball');
+            const leftPaddle = document.getElementById('leftPaddle');
+            const rightPaddle = document.getElementById('rightPaddle');
+            const startButton = document.getElementById('startButton');
+            const gameOverMessage = document.getElementById('gameOver');
+
+            let ballX = 300;
+            let ballY = 200;
+            let ballSpeedX = 1;
+            let ballSpeedY = 1;
+
+            let leftPaddleY = 160;
+            let rightPaddleY = 160;
+
+            let gameStarted = false;
+
+            startButton.addEventListener('click', startGame);
+
+            function startGame() {
+                gameStarted = true;
+                startButton.style.display = 'none'; // Hide the start button
+                ball.style.display = 'block'; // Show the ball
+                gameOverMessage.style.display = 'none'; // Hide the game over message
+                ballX = 300;
+                ballY = 200;
+                gameLoop();
+            }
+
+            document.addEventListener('keydown', function (event) {
+                if (gameStarted) {
+                    // Player controls
+                    if (event.key === 'w' && leftPaddleY > 0) {
+                        leftPaddleY -= 20;
+                    } else if (event.key === 's' && leftPaddleY < 320) {
+                        leftPaddleY += 20;
+                    }
+
+                    if (event.key === 'ArrowUp' && rightPaddleY > 0) {
+                        rightPaddleY -= 20;
+                    } else if (event.key === 'ArrowDown' && rightPaddleY < 320) {
+                        rightPaddleY += 20;
+                    }
+                }
+            });
+
+            function update() {
+                ballX += ballSpeedX;
+                ballY += ballSpeedY;
+
+                // Ball collision with top and bottom walls
+                if (ballY < 0 || ballY > 380) {
+                    ballSpeedY = -ballSpeedY;
+                }
+
+                // Ball collision with paddles
+                if ((ballX <= 10 && ballY >= leftPaddleY && ballY <= leftPaddleY + 80) ||
+                    (ballX >= 580 && ballY >= rightPaddleY && ballY <= rightPaddleY + 80)) {
+                    ballSpeedX = -ballSpeedX;
+                }
+
+                // Ball out of bounds, show game over message
+                if (ballX < 0 || ballX > 600) {
+                    gameStarted = false;
+                    startButton.style.display = 'block'; // Show the start button
+                    ball.style.display = 'none'; // Hide the ball
+                    gameOverMessage.style.display = 'block'; // Show the game over message
+                }
+
+                // Update positions
+                ball.style.left = ballX + 'px';
+                ball.style.top = ballY + 'px';
+                leftPaddle.style.top = leftPaddleY + 'px';
+                rightPaddle.style.top = rightPaddleY + 'px';
+            }
+
+            function gameLoop() {
+                update();
+                requestAnimationFrame(gameLoop);
+            }
+        });
+    </script>
+</body>
+</html>
